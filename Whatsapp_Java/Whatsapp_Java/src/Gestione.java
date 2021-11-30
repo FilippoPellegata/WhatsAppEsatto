@@ -14,6 +14,6 @@ import java.util.Random;
  */
 public class Gestione {
     
-    
+   int statoConnessione;
             
 }

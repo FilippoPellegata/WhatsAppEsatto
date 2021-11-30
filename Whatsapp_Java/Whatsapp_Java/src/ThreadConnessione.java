@@ -19,12 +19,14 @@ public class ThreadConnessione extends Thread {
 
     DatagramSocket server;
     WhatsApp frame;
+    String nome="";
 
     InetAddress indirizzo = null;
     int port = 0;
 
-    public ThreadConnessione() throws SocketException {
-        server = new DatagramSocket(12345);
+    public ThreadConnessione(WhatsApp frame1) throws SocketException {
+        server = new DatagramSocket(12346);
+        frame=frame1;
     }
 
     //richiedi connessione    
@@ -59,9 +61,9 @@ public class ThreadConnessione extends Thread {
 
 //se si----------------------------------------------------------------------------------------
             if (n == 0) {
-
+                
                 String risposta = "si" + ";" + frame.getNome() +" "+ frame.getCognome();
-
+                 nome= frame.getNome()+"_"+frame.getCognome();
                 byte[] responseBuffer = risposta.getBytes();
 
                 DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
@@ -93,6 +95,46 @@ public class ThreadConnessione extends Thread {
             int n = JOptionPane.showOptionDialog(frame,
                     "connessione già occupata", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
         }
+        //se riceve y e il nome faccio..., terzo punto connessione
+        else if(messaggio[0].equals("y")&&messaggio.length==2&&(indirizzo==null)){
+            Object[] options = {"si", "no"};
+            int n = JOptionPane.showOptionDialog(frame,
+                    "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
 
-    }
+//se si----------------------------------------------------------------------------------------
+            if (n == 0) {
+
+                String risposta = "y;";
+
+                byte[] responseBuffer = risposta.getBytes();
+
+                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+
+                responsePacket.setAddress(indirizzo);
+
+                responsePacket.setPort(port);
+
+                server.send(responsePacket);
+        }else if (n == 1) {
+                String risposta = "n;";
+
+                byte[] responseBuffer = risposta.getBytes();
+
+                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+
+                responsePacket.setAddress(indirizzo);
+
+                responsePacket.setPort(port);
+
+                server.send(responsePacket);
+            }
+        
+      
+           
+       }else if(messaggio[0].equals("y")&&(indirizzo==null)){
+           frame.setNomeChat(nome );
+       }
+    
+    
+}
 }

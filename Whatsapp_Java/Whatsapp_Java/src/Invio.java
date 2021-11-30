@@ -1,4 +1,5 @@
 
+import java.awt.Frame;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,10 +20,16 @@ public class Invio {
     String richiesta;
     WhatsApp frame;
     DatagramSocket socket;
+    Gestione g;
 
     public Invio() throws SocketException {
         richiesta = "";
         socket=new DatagramSocket();
+        frame=new WhatsApp();
+    }
+
+    public WhatsApp getFrame() {
+        return frame;
     }
     
     
@@ -40,5 +47,9 @@ responsePacket.setPort(12345);
 socket.send(responsePacket);
     }
     
+    
+    public void invioRicezione(){
+        
+    }
     
 }

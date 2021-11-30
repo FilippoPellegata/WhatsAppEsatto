@@ -5,6 +5,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 /*
@@ -18,12 +19,15 @@ import javax.swing.JTextField;
  * @author Pelle
  */
 public class WhatsApp extends javax.swing.JFrame {
-
+Invio  invio;
+ThreadConnessione threadconnessione;
     /**
      * Creates new form WhatsApp
      */
-    public WhatsApp() {
+    public WhatsApp() throws SocketException {
         initComponents();
+        invio= new Invio();
+        threadconnessione=new ThreadConnessione(invio.getFrame());
     }
 
     /**
@@ -46,6 +50,8 @@ public class WhatsApp extends javax.swing.JFrame {
         terminaConnessione = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         ip = new javax.swing.JTextField();
+        Messaggio = new javax.swing.JTextField();
+        Invia = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -79,6 +85,8 @@ public class WhatsApp extends javax.swing.JFrame {
 
         jLabel3.setText("IP:");
 
+        Invia.setText("invia");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -86,6 +94,11 @@ public class WhatsApp extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(Messaggio, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Invia)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -104,11 +117,10 @@ public class WhatsApp extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ip, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(nomeChat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(126, 126, 126)
-                .addComponent(terminaConnessione)
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(nomeChat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(terminaConnessione))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,16 +145,26 @@ public class WhatsApp extends javax.swing.JFrame {
                 .addComponent(nomeChat, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(terminaConnessione)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Messaggio, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Invia))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addComponent(terminaConnessione))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void ConnettiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConnettiActionPerformed
-        
+    try {
+        invio.invioRichiesta1();
+    } catch (IOException ex) {
+        Logger.getLogger(WhatsApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    threadconnessione.start();
+    
+    
     }//GEN-LAST:event_ConnettiActionPerformed
 
     public JTextField getCognome() {
@@ -155,6 +177,14 @@ public class WhatsApp extends javax.swing.JFrame {
 
     public JTextField getIp() {
         return ip;
+    }
+
+    public JLabel getNomeChat() {
+        return nomeChat;
+    }
+
+    public void setNomeChat(String n) {
+        nomeChat.setText(n);
     }
 
     
@@ -188,7 +218,11 @@ public class WhatsApp extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new WhatsApp().setVisible(true);
+                try {
+                    new WhatsApp().setVisible(true);
+                } catch (SocketException ex) {
+                    Logger.getLogger(WhatsApp.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -196,6 +230,8 @@ public class WhatsApp extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Cognome;
     private javax.swing.JButton Connetti;
+    private javax.swing.JButton Invia;
+    private javax.swing.JTextField Messaggio;
     private javax.swing.JTextField Nome;
     private javax.swing.JTextField ip;
     private javax.swing.JLabel jLabel1;
