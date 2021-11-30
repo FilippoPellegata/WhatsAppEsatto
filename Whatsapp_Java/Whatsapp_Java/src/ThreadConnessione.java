@@ -4,6 +4,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /*
@@ -24,13 +26,18 @@ public class ThreadConnessione extends Thread {
     InetAddress indirizzo = null;
     int port = 0;
 
-    public ThreadConnessione(WhatsApp frame1) throws SocketException {
+    int statoConnessione = 0; // 0 non connesso, 1 accettata, 2 connesso
+    
+    Invio invio;
+    
+    public ThreadConnessione(WhatsApp frame1, Invio invio) throws SocketException {
         server = new DatagramSocket(12346);
         frame=frame1;
+        this.invio = invio;
     }
 
     //richiedi connessione    
-    public String[] richiediConnessione() throws SocketException, IOException {
+    public String[] riceviMessaggio() throws SocketException, IOException {
 
         byte[] buffer = new byte[1500];
 
@@ -49,92 +56,91 @@ public class ThreadConnessione extends Thread {
         return messaggio;
     }
 
-    public void elaboraMessaggio() throws IOException {
-        String[] messaggio = richiediConnessione();
+    public void elaboraMessaggio(String[] messaggio) throws IOException {
 
         //primo caso+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        if (messaggio[0].equals("a")&&(indirizzo==null)) {
+        if (messaggio[0].equals("a") && statoConnessione == 0) {
 
             Object[] options = {"si", "no"};
             int n = JOptionPane.showOptionDialog(frame,
-                    "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+                    "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
+            //n = 0;
 //se si----------------------------------------------------------------------------------------
+            String risposta = "";
+
             if (n == 0) {
                 
-                String risposta = "si" + ";" + frame.getNome() +" "+ frame.getCognome();
+                risposta = "y" + ";" + frame.getNome() +" "+ frame.getCognome();
                  nome= frame.getNome()+"_"+frame.getCognome();
-                byte[] responseBuffer = risposta.getBytes();
-
-                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
-
-                responsePacket.setAddress(indirizzo);
-
-                responsePacket.setPort(port);
-
-                server.send(responsePacket);
+                 statoConnessione = 1;
+                
             }//se no-------------------------------------------------------------------------------------------
             else if (n == 1) {
-                String risposta = "n;";
-
-                byte[] responseBuffer = risposta.getBytes();
-
-                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
-
-                responsePacket.setAddress(indirizzo);
-
-                responsePacket.setPort(port);
-
-                server.send(responsePacket);
+                risposta = "n;";  
             }
+            
+            invio.inviaMessaggio(risposta, indirizzo, port);
 
         }
         
-        else if(messaggio[0].equals("a")&&(indirizzo==null)){
+        else if(messaggio[0].equals("a") && (statoConnessione == 1 || statoConnessione == 2)){
             Object[] options = {"ok"};
             int n = JOptionPane.showOptionDialog(frame,
-                    "connessione già occupata", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+                    "connessione già occupata", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         //se riceve y e il nome faccio..., terzo punto connessione
-        else if(messaggio[0].equals("y")&&messaggio.length==2&&(indirizzo==null)){
+        else if(messaggio[0].equals("y")&&messaggio.length==2){
             Object[] options = {"si", "no"};
             int n = JOptionPane.showOptionDialog(frame,
-                    "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+                    "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 //se si----------------------------------------------------------------------------------------
-            if (n == 0) {
+        String risposta = "";
 
-                String risposta = "y;";
+        if (n == 0) {
 
-                byte[] responseBuffer = risposta.getBytes();
+                risposta = "y;";
+                statoConnessione = 2;
+                 frame.setNomeChat(nome );
 
-                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
-
-                responsePacket.setAddress(indirizzo);
-
-                responsePacket.setPort(port);
-
-                server.send(responsePacket);
+                
         }else if (n == 1) {
-                String risposta = "n;";
-
-                byte[] responseBuffer = risposta.getBytes();
-
-                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
-
-                responsePacket.setAddress(indirizzo);
-
-                responsePacket.setPort(port);
-
-                server.send(responsePacket);
+                risposta = "n;";
+                statoConnessione = 0;
+                
             }
         
+                invio.inviaMessaggio(risposta, indirizzo, port);
       
            
-       }else if(messaggio[0].equals("y")&&(indirizzo==null)){
+       }else if(messaggio[0].equals("y") && messaggio.length == 1){
            frame.setNomeChat(nome );
+           statoConnessione = 2;
        }
     
     
 }
+    
+    @Override
+    public void run() {
+        String[] m = null;
+        
+        while (true) {
+        try {
+            m = riceviMessaggio();
+            for (int i = 0; i < m.length; i++) {
+            System.out.println(m[i]);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ThreadConnessione.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+            try {
+                elaboraMessaggio(m);
+            } catch (IOException ex) {
+                Logger.getLogger(ThreadConnessione.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 }

@@ -22,10 +22,10 @@ public class Invio {
     DatagramSocket socket;
     Gestione g;
 
-    public Invio() throws SocketException {
+    public Invio(WhatsApp frame) throws SocketException {
         richiesta = "";
-        socket=new DatagramSocket();
-        frame=new WhatsApp();
+        socket=new DatagramSocket(); // da cambiare con random
+        this.frame=frame;
     }
 
     public WhatsApp getFrame() {
@@ -38,18 +38,30 @@ public class Invio {
         
         byte[] responseBuffer = richiesta.getBytes();
 
-DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+        DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
 
-responsePacket.setAddress(InetAddress.getByName(frame.getIp().getText()));
+        responsePacket.setAddress(InetAddress.getByName(frame.getIp()));
 
-responsePacket.setPort(12345);
+        responsePacket.setPort(12345);
 
-socket.send(responsePacket);
+        socket.send(responsePacket);
     }
     
     
     public void invioRicezione(){
         
+    }
+    
+    public void inviaMessaggio(String messaggio, InetAddress indirizzo, int porta) throws IOException {
+        byte[] responseBuffer = messaggio.getBytes();
+
+        DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+
+        responsePacket.setAddress(InetAddress.getByName("localhost"));
+
+        responsePacket.setPort(12345);
+
+        socket.send(responsePacket);
     }
     
 }

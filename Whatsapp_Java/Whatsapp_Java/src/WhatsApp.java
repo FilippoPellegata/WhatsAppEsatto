@@ -26,8 +26,9 @@ ThreadConnessione threadconnessione;
      */
     public WhatsApp() throws SocketException {
         initComponents();
-        invio= new Invio();
-        threadconnessione=new ThreadConnessione(invio.getFrame());
+        invio= new Invio(this);
+        threadconnessione=new ThreadConnessione(this, invio);
+        threadconnessione.start();
     }
 
     /**
@@ -162,25 +163,25 @@ ThreadConnessione threadconnessione;
     } catch (IOException ex) {
         Logger.getLogger(WhatsApp.class.getName()).log(Level.SEVERE, null, ex);
     }
-    threadconnessione.start();
+
     
     
     }//GEN-LAST:event_ConnettiActionPerformed
 
-    public JTextField getCognome() {
-        return Cognome;
+    public String getCognome() {
+        return Cognome.getText();
     }
 
-    public JTextField getNome() {
-        return Nome;
+    public String getNome() {
+        return Nome.getText();
     }
 
-    public JTextField getIp() {
-        return ip;
+    public String getIp() {
+        return ip.getText();
     }
 
-    public JLabel getNomeChat() {
-        return nomeChat;
+    public String getNomeChat() {
+        return nomeChat.getText();
     }
 
     public void setNomeChat(String n) {
