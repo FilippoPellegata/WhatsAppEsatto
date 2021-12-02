@@ -63,7 +63,8 @@ public class ThreadConnessione extends Thread {
 
         //primo caso+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         if (messaggio[0].equals("a") && statoConnessione == 0) {
-
+           nome = frame.getNome() + "_" + frame.getCognome();
+           
             Object[] options = {"si", "no"};
             int n = JOptionPane.showOptionDialog(frame,
                     "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -75,8 +76,9 @@ public class ThreadConnessione extends Thread {
             if (n == 0) {
 
                 risposta = "y" + ";" + frame.getNome() + " " + frame.getCognome();
+                this.frame.setNomeChat(nome);
                 nome = frame.getNome() + "_" + frame.getCognome();
-
+                 
                 statoConnessione = 1;
 
             }//se no-------------------------------------------------------------------------------------------
@@ -87,13 +89,14 @@ public class ThreadConnessione extends Thread {
             invio.inviaMessaggio(risposta, indirizzo, port);
 
         } else if (messaggio[0].equals("a") && (statoConnessione == 1 || statoConnessione == 2)) {
-            frame.setNomeChat(nome);
-             nome = frame.getNome() + "_" + frame.getCognome();
+           
             Object[] options = {"ok"};
             int n = JOptionPane.showOptionDialog(frame,
                     "connessione già occupata", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         } //se riceve y e il nome faccio..., terzo punto connessione
         else if (messaggio[0].equals("y") && messaggio.length == 2) {
+             this.frame.setNomeChat(nome);
+             
             Object[] options = {"si", "no"};
             int n = JOptionPane.showOptionDialog(frame,
                     "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -102,7 +105,7 @@ public class ThreadConnessione extends Thread {
             String risposta = "";
 
             if (n == 0) {
-                frame.setNomeChat(nome);
+                
                 risposta = "y;";
                
                 statoConnessione = 2;
@@ -123,7 +126,7 @@ public class ThreadConnessione extends Thread {
 
     }
 
-    public void Chat(String[] messaggio, int x, int y) {
+    public void Chat(String[] messaggio) {
 
         if (messaggio[0].equals("m") && statoConnessione == 2) {
             
@@ -134,8 +137,7 @@ public class ThreadConnessione extends Thread {
     @Override
     public void run() {
         String[] m = null;
-        int y = 150;
-        int x = 30;
+        
 
         while (true) {
             try {
@@ -152,11 +154,11 @@ public class ThreadConnessione extends Thread {
             } catch (IOException ex) {
                 Logger.getLogger(ThreadConnessione.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (m[0] == "m") {
-                Chat(m, x, y);
-                y += 150;
+            
+                Chat(m);
+               
 
-            }
+            
         }
     }
 }

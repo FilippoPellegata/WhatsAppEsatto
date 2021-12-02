@@ -20,7 +20,7 @@ public class Invio {
     String richiesta;
     WhatsApp frame;
     DatagramSocket socket;
-    Gestione g;
+   
 
     public Invio(WhatsApp frame) throws SocketException {
         richiesta = "";
@@ -55,7 +55,7 @@ public class Invio {
 
         DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
 
-        responsePacket.setAddress(InetAddress.getByName("localhost"));
+        responsePacket.setAddress(InetAddress.getByName(frame.getIp()));
 
         responsePacket.setPort(12346);
 
@@ -70,7 +70,7 @@ public class Invio {
 
         DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
 
-        responsePacket.setAddress(InetAddress.getByName("localhost"));
+        responsePacket.setAddress(InetAddress.getByName(frame.getIp()));
 
         responsePacket.setPort(12346);
 

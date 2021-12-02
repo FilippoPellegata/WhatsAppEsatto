@@ -32,6 +32,7 @@ ThreadConnessione threadconnessione;
         threadconnessione=new ThreadConnessione(this, invio);
         threadconnessione.start();
         y=10;
+        
     }
 
     /**
@@ -179,6 +180,7 @@ ThreadConnessione threadconnessione;
     private void InviaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InviaActionPerformed
     try {
         invio.inviaMessaggio2(getMessaggio());
+        mettiLabel(getMessaggio());
     } catch (IOException ex) {
         Logger.getLogger(WhatsApp.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -249,11 +251,14 @@ ThreadConnessione threadconnessione;
     }
     public void mettiLabel(String stringa)
     {
-        JLabel label = new JLabel(stringa);
+        JLabel label = new JLabel();
+        label.setText(stringa);
+        label.setSize(stringa.length()*10,20);
         label.setLocation(20, y);
         schermataMessaggi.add(label);
         y+=label.getSize().height+10;
         schermataMessaggi.setSize(schermataMessaggi.getSize().width,schermataMessaggi.getSize().height+label.getSize().height+10);
+        schermataMessaggi.repaint();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
