@@ -1,4 +1,6 @@
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -6,6 +8,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /*
@@ -21,18 +24,18 @@ public class ThreadConnessione extends Thread {
 
     DatagramSocket server;
     WhatsApp frame;
-    String nome="";
+    String nome = "";
 
     InetAddress indirizzo = null;
     int port = 0;
 
     int statoConnessione = 0; // 0 non connesso, 1 accettata, 2 connesso
-    
+
     Invio invio;
-    
+
     public ThreadConnessione(WhatsApp frame1, Invio invio) throws SocketException {
-        server = new DatagramSocket(12346);
-        frame=frame1;
+        server = new DatagramSocket(12345);
+        frame = frame1;
         this.invio = invio;
     }
 
@@ -50,8 +53,8 @@ public class ThreadConnessione extends Thread {
         String messaggioRicevuto = new String(dataReceived, 0, packet.getLength());
 
         String[] messaggio = messaggioRicevuto.split(";");
-        indirizzo=packet.getAddress();
-        port=packet.getPort();
+        indirizzo = packet.getAddress();
+        port = packet.getPort();
 
         return messaggio;
     }
@@ -70,76 +73,89 @@ public class ThreadConnessione extends Thread {
             String risposta = "";
 
             if (n == 0) {
-                
-                risposta = "y" + ";" + frame.getNome() +" "+ frame.getCognome();
-                 nome= frame.getNome()+"_"+frame.getCognome();
-                 statoConnessione = 1;
-                
+
+                risposta = "y" + ";" + frame.getNome() + " " + frame.getCognome();
+                nome = frame.getNome() + "_" + frame.getCognome();
+
+                statoConnessione = 1;
+
             }//se no-------------------------------------------------------------------------------------------
             else if (n == 1) {
-                risposta = "n;";  
+                risposta = "n;";
             }
-            
+
             invio.inviaMessaggio(risposta, indirizzo, port);
 
-        }
-        
-        else if(messaggio[0].equals("a") && (statoConnessione == 1 || statoConnessione == 2)){
+        } else if (messaggio[0].equals("a") && (statoConnessione == 1 || statoConnessione == 2)) {
+            frame.setNomeChat(nome);
+             nome = frame.getNome() + "_" + frame.getCognome();
             Object[] options = {"ok"};
             int n = JOptionPane.showOptionDialog(frame,
                     "connessione già occupata", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        }
-        //se riceve y e il nome faccio..., terzo punto connessione
-        else if(messaggio[0].equals("y")&&messaggio.length==2){
+        } //se riceve y e il nome faccio..., terzo punto connessione
+        else if (messaggio[0].equals("y") && messaggio.length == 2) {
             Object[] options = {"si", "no"};
             int n = JOptionPane.showOptionDialog(frame,
                     "vuoi instaurare la connessione?", null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 //se si----------------------------------------------------------------------------------------
-        String risposta = "";
+            String risposta = "";
 
-        if (n == 0) {
-
+            if (n == 0) {
+                frame.setNomeChat(nome);
                 risposta = "y;";
+               
                 statoConnessione = 2;
-                 frame.setNomeChat(nome );
 
-                
-        }else if (n == 1) {
+            } else if (n == 1) {
                 risposta = "n;";
                 statoConnessione = 0;
-                
+
             }
-        
-                invio.inviaMessaggio(risposta, indirizzo, port);
-      
-           
-       }else if(messaggio[0].equals("y") && messaggio.length == 1){
-           frame.setNomeChat(nome );
-           statoConnessione = 2;
-       }
-    
-    
-}
-    
+
+            invio.inviaMessaggio(risposta, indirizzo, port);
+
+        } else if (messaggio[0].equals("y") && messaggio.length == 1) {
+
+            statoConnessione = 2;
+            
+        }
+
+    }
+
+    public void Chat(String[] messaggio, int x, int y) {
+
+        if (messaggio[0].equals("m") && statoConnessione == 2) {
+            
+            frame.mettiLabel(messaggio[1]);
+        }
+    }
+
     @Override
     public void run() {
         String[] m = null;
-        
+        int y = 150;
+        int x = 30;
+
         while (true) {
-        try {
-            m = riceviMessaggio();
-            for (int i = 0; i < m.length; i++) {
-            System.out.println(m[i]);
+            try {
+                m = riceviMessaggio();
+                for (int i = 0; i < m.length; i++) {
+                    System.out.println(m[i]);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ThreadConnessione.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (IOException ex) {
-            Logger.getLogger(ThreadConnessione.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+
             try {
                 elaboraMessaggio(m);
             } catch (IOException ex) {
                 Logger.getLogger(ThreadConnessione.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (m[0] == "m") {
+                Chat(m, x, y);
+                y += 150;
+
             }
         }
     }

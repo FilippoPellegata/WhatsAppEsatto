@@ -173,6 +173,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="invia"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="InviaActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

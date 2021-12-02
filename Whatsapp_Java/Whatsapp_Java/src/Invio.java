@@ -42,15 +42,13 @@ public class Invio {
 
         responsePacket.setAddress(InetAddress.getByName(frame.getIp()));
 
-        responsePacket.setPort(12345);
+        responsePacket.setPort(12346);
 
         socket.send(responsePacket);
     }
     
     
-    public void invioRicezione(){
-        
-    }
+
     
     public void inviaMessaggio(String messaggio, InetAddress indirizzo, int porta) throws IOException {
         byte[] responseBuffer = messaggio.getBytes();
@@ -59,9 +57,26 @@ public class Invio {
 
         responsePacket.setAddress(InetAddress.getByName("localhost"));
 
-        responsePacket.setPort(12345);
+        responsePacket.setPort(12346);
 
         socket.send(responsePacket);
     }
+    
+    
+    public void inviaMessaggio2(String messaggio) throws IOException {
+        messaggio="m;"+messaggio;
+        
+        byte[] responseBuffer = messaggio.getBytes();
+
+        DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+
+        responsePacket.setAddress(InetAddress.getByName("localhost"));
+
+        responsePacket.setPort(12346);
+
+        socket.send(responsePacket);
+    }
+    
+    
     
 }

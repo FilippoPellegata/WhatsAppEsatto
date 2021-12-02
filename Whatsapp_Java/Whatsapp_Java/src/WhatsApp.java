@@ -1,4 +1,5 @@
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -24,11 +25,13 @@ ThreadConnessione threadconnessione;
     /**
      * Creates new form WhatsApp
      */
+     int y;
     public WhatsApp() throws SocketException {
         initComponents();
         invio= new Invio(this);
         threadconnessione=new ThreadConnessione(this, invio);
         threadconnessione.start();
+        y=10;
     }
 
     /**
@@ -87,6 +90,11 @@ ThreadConnessione threadconnessione;
         jLabel3.setText("IP:");
 
         Invia.setText("invia");
+        Invia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                InviaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -168,6 +176,18 @@ ThreadConnessione threadconnessione;
     
     }//GEN-LAST:event_ConnettiActionPerformed
 
+    private void InviaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InviaActionPerformed
+    try {
+        invio.inviaMessaggio2(getMessaggio());
+    } catch (IOException ex) {
+        Logger.getLogger(WhatsApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    }//GEN-LAST:event_InviaActionPerformed
+
+    public String getMessaggio() {
+        return Messaggio.getText();
+    }
+
     public String getCognome() {
         return Cognome.getText();
     }
@@ -226,6 +246,14 @@ ThreadConnessione threadconnessione;
                 }
             }
         });
+    }
+    public void mettiLabel(String stringa)
+    {
+        JLabel label = new JLabel(stringa);
+        label.setLocation(20, y);
+        schermataMessaggi.add(label);
+        y+=label.getSize().height+10;
+        schermataMessaggi.setSize(schermataMessaggi.getSize().width,schermataMessaggi.getSize().height+label.getSize().height+10);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
