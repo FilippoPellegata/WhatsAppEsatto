@@ -139,7 +139,7 @@ public class ThreadConnessione extends Thread {
         String[] m = null;
         
 
-        while (true) {
+        while (m[0]!="c") {
             try {
                 m = riceviMessaggio();
                 for (int i = 0; i < m.length; i++) {

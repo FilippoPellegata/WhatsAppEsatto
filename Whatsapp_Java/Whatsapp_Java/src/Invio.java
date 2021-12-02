@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -77,6 +78,19 @@ public class Invio {
         socket.send(responsePacket);
     }
     
-    
+    public void termina(String messaggio) throws UnknownHostException, IOException{
+        
+        
+        byte[] responseBuffer = messaggio.getBytes();
+
+        DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+
+        responsePacket.setAddress(InetAddress.getByName(frame.getIp()));
+
+        responsePacket.setPort(12346);
+
+        socket.send(responsePacket);
+
+    }
     
 }

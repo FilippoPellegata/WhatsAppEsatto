@@ -87,6 +87,11 @@ ThreadConnessione threadconnessione;
         jScrollPane1.setViewportView(schermataMessaggi);
 
         terminaConnessione.setText("Termina connessione");
+        terminaConnessione.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                terminaConnessioneActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("IP:");
 
@@ -185,6 +190,20 @@ ThreadConnessione threadconnessione;
         Logger.getLogger(WhatsApp.class.getName()).log(Level.SEVERE, null, ex);
     }
     }//GEN-LAST:event_InviaActionPerformed
+
+    private void terminaConnessioneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_terminaConnessioneActionPerformed
+    try {
+        invio.termina("c");
+        Nome= new JTextField();
+        Cognome= new JTextField();
+          ip= new JTextField();
+          schermataMessaggi.removeAll();
+          schermataMessaggi.revalidate();
+          repaint();
+    } catch (IOException ex) {
+        Logger.getLogger(WhatsApp.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    }//GEN-LAST:event_terminaConnessioneActionPerformed
 
     public String getMessaggio() {
         return Messaggio.getText();
