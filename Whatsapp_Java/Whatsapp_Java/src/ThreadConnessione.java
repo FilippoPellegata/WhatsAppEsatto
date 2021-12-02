@@ -138,8 +138,8 @@ public class ThreadConnessione extends Thread {
     public void run() {
         String[] m = null;
         
-
-        while (m[0]!="c") {
+        
+         do{
             try {
                 m = riceviMessaggio();
                 for (int i = 0; i < m.length; i++) {
@@ -159,6 +159,6 @@ public class ThreadConnessione extends Thread {
                
 
             
-        }
+        }while (m[0]!="c");
     }
 }
